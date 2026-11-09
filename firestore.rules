@@ -2,22 +2,59 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function signedIn() { return request.auth != null; }
-    function isAdmin()  { return signedIn() && request.auth.token.email == 't1@trainers.app'; }
-    function isSelf(id) { return signedIn() && request.auth.token.email == id + '@trainers.app'; }
+    // ---- helpers -------------------------------------------------------
+    // Account e-mail is  <username>@trainers.app  (legacy)  or  <username>.<ver>@trainers.app
+    // (<ver> is a random token created when an admin resets a PIN; the profile stores the valid one).
+    function signedIn()  { return request.auth != null && request.auth.token.email != null; }
+    function uid()       { return request.auth.token.email.split('@')[0].split('[.]')[0]; }
+    function profPath()  { return /databases/$(database)/documents/profiles/$(uid()); }
 
-    // Each trainer's own cabinet data: readable by any signed-in trainer,
-    // writable by the owner or the admin (t1).
-    match /trainers/{id} {
-      allow read: if signedIn();
-      allow write: if isSelf(id) || isAdmin();
+    // First-run bootstrap: until profiles/t1 exists, the original t1 account may seed the profiles.
+    function bootstrap() {
+      return signedIn() && request.auth.token.email == 't1@trainers.app'
+             && !exists(/databases/$(database)/documents/profiles/t1);
+    }
+    function expectedEmail(p) {
+      return (('ver' in p) && p.ver != '') ? uid() + '.' + p.ver + '@trainers.app'
+                                           : uid() + '@trainers.app';
+    }
+    function valid() {
+      return signedIn() && (bootstrap() ||
+        (exists(profPath())
+         && get(profPath()).data.active == true
+         && request.auth.token.email == expectedEmail(get(profPath()).data)));
+    }
+    function role()      { return bootstrap() ? 'superadmin' : get(profPath()).data.role; }
+    function isSuper()   { return valid() && role() == 'superadmin'; }
+    function isAdm()     { return valid() && role() == 'admin'; }
+    function isManager() { return valid() && role() in ['superadmin', 'admin']; }
+    function isStaff()   { return valid() && role() in ['superadmin', 'admin', 'instructor']; }
+
+    // ---- profiles: public read (login screen needs names), role-limited write ----
+    match /profiles/{id} {
+      allow read: if true;
+      allow create: if isSuper()
+                    || (isAdm() && request.resource.data.role in ['instructor', 'student']);
+      allow update: if isSuper()
+                    || (isAdm() && resource.data.role in ['instructor', 'student']
+                               && request.resource.data.role in ['instructor', 'student']);
+      allow delete: if isSuper();
     }
 
-    // Shared collections: any signed-in trainer
+    // ---- each staff member's cabinet data ----
+    match /trainers/{id} {
+      allow read: if isStaff();
+      allow write: if isManager() || (isStaff() && id == uid());
+    }
+
+    // ---- shared collections ----
     match /{col}/{doc} {
-      allow read, write: if signedIn()
-        && col in ['bookings','messages','presence','meetings',
-                   'vesdocs','veschunks','katfiles','katchunks'];
+      // staff only
+      allow read, write: if isStaff()
+        && col in ['bookings', 'messages', 'presence', 'meetings', 'katfiles', 'katchunks'];
+      // lesson materials: everyone signed in (incl. students) may read, staff may write
+      allow read:  if valid() && col in ['vesdocs', 'veschunks'];
+      allow write: if isStaff() && col in ['vesdocs', 'veschunks'];
     }
   }
 }

@@ -1,5 +1,7 @@
+# Secrets / local only - NEVER publish
 .env
-js/config.js
+check.html
+docs/original-index.backup.html
 node_modules/
 .DS_Store
 Thumbs.db

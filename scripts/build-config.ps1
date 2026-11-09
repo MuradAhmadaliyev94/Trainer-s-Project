@@ -14,6 +14,6 @@ $fb = @(
  @('storageBucket','FB_STORAGE_BUCKET'),@('messagingSenderId','FB_MESSAGING_SENDER_ID'),
  @('appId','FB_APP_ID'),@('measurementId','FB_MEASUREMENT_ID')
 ) | ForEach-Object { "    $($_[0]): `"$($v[$_[1]])`"" }
-$out = "// AUTO-GENERATED from .env by scripts/build-config.ps1 - do not edit.`nwindow.APP_CONFIG = {`n  DRIVE_URL: `"$($v['DRIVE_URL'])`",`n  FIREBASE: {`n$($fb -join ",`n")`n  }`n};`n"
+$out = "// AUTO-GENERATED from .env by scripts/build-config.ps1 - do not edit. Contains only the PUBLIC Firebase web config, so it is committed and deployed.`nwindow.APP_CONFIG = {`n  DRIVE_URL: `"$($v['DRIVE_URL'])`",`n  FIREBASE: {`n$($fb -join ",`n")`n  }`n};`n"
 [IO.File]::WriteAllText((Join-Path $root "js\config.js"), $out, (New-Object Text.UTF8Encoding($false)))
 Write-Host "js/config.js generated."

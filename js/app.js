@@ -1,7 +1,7 @@
 
 /* Trainer's Platform - main application (globals shared with js/config.js and js/data/*) */
 const $=document.getElementById("app");
-let bk=null,bd=todayIso(),BK=[],vs=null,ve=null,sel=[],dr=null,dirty=false,fa=null,pv=null,pe=null,dlg=null,ed=null,dbs="wait",who=null,peer="all",MS=[],P={},rd={},view="cab",meets=[],docs={},me=null,sec="offline",db=null,admin=false,loginFor=null,panel=false,ready=false;
+let bk=null,bd=todayIso(),BK=[],vs=null,ve=null,sel=[],dr=null,dirty=false,fa=null,pv=null,pe=null,dlg=null,ed=null,dbs="wait",who=null,peer="all",MS=[],P={},rd={},view="cab",meets=[],docs={},me=null,sec="offline",db=null,admin=false,role="",PROFILES={},STU=[],loginFor=null,panel=false,ready=false;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const info=id=>T.find(t=>t[0]===id);
 const D=id=>docs[id]||{data:{}};
@@ -15,7 +15,7 @@ async function save(id,data){
   render();
   try{ if(db) await db.doc("trainers/"+id).set({data}); }catch(e){ alert("Yadda saxlanmadı: "+(e.message||e)); }
 }
-function AV(id){if(PH[id])return `<img src="${PH[id]}" alt="">`;const c=AC[id],x=c.ex,h=c.hair,
+function AV(id){if(PH[id])return `<img src="${PH[id]}" alt="">`;if(!AC[id])return initAV(id);const c=AC[id],x=c.ex,h=c.hair,
 H={short:`<path d="M20 28c-1-12 8-17 14-16 8 1 11 8 10 16-3-5-6-8-12-8s-9 3-12 8z" fill="${h}"/>`,swept:`<path d="M20 28c-2-13 8-18 17-15 6 2 8 8 7 15-2-6-7-9-14-8-5 1-8 4-10 8z" fill="${h}"/>`,curly:`<g fill="${h}"><circle cx="22" cy="20" r="6"/><circle cx="32" cy="15" r="7"/><circle cx="42" cy="20" r="6"/><circle cx="20" cy="27" r="4"/><circle cx="44" cy="27" r="4"/></g>`,bald:"",long:`<path d="M19 28c-1-12 8-17 13-17s14 5 13 17c-3-5-6-8-13-8s-10 3-13 8z" fill="${h}"/><path d="M19 28c-2 8-2 16 0 22h6V30z" fill="${h}"/><path d="M45 28c2 8 2 16 0 22h-6V30z" fill="${h}"/>`};
 const beard=x.includes("beard"),face=(beard?`<path d="M20 31c0 10 5 13 12 13s12-3 12-13c-2 5-6 6-12 6s-10-1-12-6z" fill="${h}"/>`:"")+(x.includes("stubble")?`<path d="M20 31c0 10 5 13 12 13s12-3 12-13c-2 5-6 6-12 6s-10-1-12-6z" fill="${h}" opacity=".3"/>`:"")+(x.includes("mustache")?`<path d="M26 34q3-3 6 0q3-3 6 0q-3 3-6 1q-3 2-6-1z" fill="${h}"/>`:"");
 return `<svg viewBox="0 0 64 64"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c.b[0]}"/><stop offset="1" stop-color="${c.b[1]}"/></linearGradient><clipPath id="k${id}"><circle cx="32" cy="32" r="32"/></clipPath></defs><circle cx="32" cy="32" r="32" fill="url(#g${id})"/><g clip-path="url(#k${id})"><path d="M8 64c0-14 10-20 24-20s24 6 24 20z" fill="${c.suit}"/><path d="M26 45l6 8 6-8z" fill="#fff"/><path d="M30 50h4l1 10h-6z" fill="${c.tie}"/><rect x="28" y="38" width="8" height="8" fill="${c.skin}"/><circle cx="20" cy="30" r="2.6" fill="${c.skin}"/><circle cx="44" cy="30" r="2.6" fill="${c.skin}"/><ellipse cx="32" cy="29" rx="12" ry="13" fill="${c.skin}"/>${H[c.hs]}${face}<circle cx="27" cy="29" r="1.6" fill="#222"/><circle cx="37" cy="29" r="1.6" fill="#222"/><path d="M27 36q5 4 10 0" stroke="${beard?"#fff":"#7a3b2e"}" fill="none" stroke-width="1.8" stroke-linecap="round"/>${x.includes("glasses")?`<g fill="none" stroke="#222" stroke-width="1.6"><circle cx="27" cy="29" r="4.6"/><circle cx="37" cy="29" r="4.6"/><path d="M31.6 29h.8"/></g>`:""}${x.includes("headset")?`<g stroke="#333" stroke-width="2" fill="none"><path d="M19 28a13 13 0 0 1 26 0"/><path d="M19 35q2 6 9 6"/></g><rect x="16.5" y="27" width="4" height="8" rx="2" fill="#333"/>`:""}</g>${x.includes("badge")?`<circle cx="52" cy="12" r="8" fill="#f59e0b" stroke="#fff" stroke-width="2"/><text x="52" y="16" text-anchor="middle" font-size="11" fill="#fff">★</text>`:""}</svg>`}
@@ -335,7 +335,7 @@ function bdg(id){const a=stt(id),n=Math.max(0,Math.min(5,+a.stars||0)),full=a.to
  return (a.tot?`<span class="tot">${ic("kat")}TOT sertifikatlı</span>`:"")+(n?`<span class="stars" title="${n} ulduz">${[1,2,3,4,5].map(i=>SST(i<=n)).join("")}</span>`:"")+(full?`<span class="stt">${ic("star")}Statuslu təlimçi</span>`:"")}
 const isOn=id=>Date.now()-(P[id]||0)<75000;
 const st=id=>{const o=isOn(id);return `<span class="st ${o?"on":"off"}"><svg class="si" viewBox="0 0 10 10"><circle cx="5" cy="5" r="${o?4.5:3.6}" fill="${o?"currentColor":"none"}" stroke="currentColor" stroke-width="1.6"/></svg>${o?"Onlayn":"Offline"}</span>`};
-function setPres(v){if(!who)return;P[who]=v;if(db)try{db.doc("presence/"+who).set({ts:v}).catch(()=>{});}catch(e){}}
+function setPres(v){if(!who||role==="student")return;P[who]=v;if(db)try{db.doc("presence/"+who).set({ts:v}).catch(()=>{});}catch(e){}}
 const loadRd=()=>{try{rd=JSON.parse(localStorage.getItem("rd_"+who)||"{}")}catch(e){rd={}}};
 const markRd=()=>{rd[peer]=Date.now();try{localStorage.setItem("rd_"+who,JSON.stringify(rd))}catch(e){}};
 const un=p=>MS.filter(m=>m.ts>(rd[p]||0)&&m.from!==who&&(p==="all"?m.to==="all":(m.from===p&&m.to===who))).length;
@@ -380,13 +380,13 @@ function home(){
   <div class="lgq"><button class="fl${SET.lang==="az"?" on":""}" data-lang="az" title="Azərbaycan dili">${FLAZ}</button><button class="fl${SET.lang==="ru"?" on":""}" data-lang="ru" title="Русский">${FLRU}</button></div><h1><i data-i="h1a" style="font-style:normal">Təlimçi</i> <span data-i="h1b">Kabineti</span></h1>
   <p class="slogan"><b>Təlimlərə nəzarət et</b> və təlim keyfiyyətini yüksəlt</p></div>
   <div class="wrap"><div class="grid">${T.map(t=>`<div class="tc" data-login="${t[0]}" style="--tn:${tn(t[0])}">${avc(t[0])}<b>${esc(t[1])}</b><small>${esc(t[2])}</small><br>${st(t[0])}<div class="bgs">${bdg(t[0])}</div></div>`).join("")}</div>
-  <p class="note" style="text-align:center">Kabinetə girmək üçün adınızın üzərinə klikləyin və PIN kodu daxil edin.</p></div>`;
+  <p class="note" style="text-align:center">Kabinetə girmək üçün adınızın üzərinə klikləyin və PIN kodu daxil edin.</p><p style="text-align:center"><button class="btn g" data-slogin>Tələbə girişi</button></p></div>`;
 }
 function cab(){
   const id=me,t=info(id),s=S.find(x=>x[0]===sec),items=list(id,sec),E=ed&&list(id,sec).find(x=>x.id===ed)||null,TR=sec==="offline"||sec==="online",EZ=sec==="ezam",PV=pv&&list(id,sec).find(x=>x.id===pv)||null;
   return `<div class="wrap"><div class="top"><h2 class="ph" style="--tn:${tn(id)};display:flex;align-items:center;gap:12px">${avc(id,"margin:0;width:54px;height:54px;flex:none")}<span>${esc(t[1])}</span> <small style="color:var(--mu);font-size:14px">· kabinet</small><span style="font-size:14px;font-weight:400;margin-left:8px">${st(id)}</span><span class="bgs">${bdg(id)}</span></h2>
   <div><button class="btn g" data-room>${ic("online")}Görüş otağı</button> <button class="btn g" data-chat>${ic("msg")}Mesajlar${unT()?` <span class="ub">${unT()}</span>`:""}</button> <button class="btn g" id="pinb">PIN dəyiş</button> <button class="btn g" id="out">Çıxış</button></div></div>
-  ${admin?`<div class="top"><button class="btn ${panel?"g":""}" id="pnl">${panel?"← Öz kabinetim":"İdarəetmə paneli"}</button>${me!==who?` <span class="st on" style="margin-left:10px">Admin rejimi: ${esc(t[1])} kabinetini redaktə edirsiniz</span>`:""}</div>`:""}
+  ${admin?`<div class="top"><button class="btn ${panel?"g":""}" id="pnl">${panel?"← Öz kabinetim":"İdarəetmə paneli"}</button> <button class="btn g" data-users>İstifadəçilər</button>${me!==who?` <span class="st on" style="margin-left:10px">Admin rejimi: ${esc(t[1])} kabinetini redaktə edirsiniz</span>`:""}</div>`:""}
   ${panel&&admin?`<div class="adx"><h2 class="ah">Nəzarət mərkəzi</h2>${roomBanner()+chatBanner()+adminView()}</div>`:`<div class="lay"><nav class="side">${S.map(x=>`<button class="tab ${x[0]===sec?"on":""}" data-tab="${x[0]}"><span>${ic(x[0])}${x[1]}</span><i>${x[0]==="ves"?DVS.length:list(id,x[0]).length}</i></button>`).join("")}<div class="sdiv"></div>${SR.map(x=>`<button class="tab sp ${x[0]}${sec===x[0]?" on":""}" data-tab="${x[0]}"><span>${ic(x[2])}${x[1]}</span><i>${bnum(x[0])}</i></button>`).join("")}<div class="sdiv"></div><button class="tab${sec==="settings"?" on":""}" data-tab="settings"><span>${ic("gear")}Tənzimləmələr</span></button></nav>
   ${sec==="settings"?spanel():sec==="ves"?dvpanel():sec==="kat"?kpanel():sec==="vendor"?vpanel():sec==="rooms"||sec==="red"?rpanel(sec):PV?ipanel(PV):`<div class="panel"><h3 style="margin-top:0;display:flex;align-items:center">${ic(s[0])}${s[1]}</h3>
   <div class="form"><div><label>${s[3]}</label><input id="f_ad" value="${esc(E?E.ad:"")}"></div><div><label>Başlama tarixi</label>${DS("f_d1",E&&E.d1)}</div><div><label>Bitmə tarixi (istəyə bağlı)</label>${DS("f_d2",E&&E.d2)}</div>
@@ -400,7 +400,7 @@ function adminView(){
   <p class="note">Təlimçinin adına klikləyərək onun kabinetini aça və redaktə edə bilərsiniz.</p></div>`;
 }
 function render(){
-  $.innerHTML=(dbs==="off"?`<div class="warn">Ortaq bazaya qoşulmaq mümkün olmadı. Mesajlar, təlim qeydləri və status yalnız bu cihazda qalır, başqalar görmür.</div>`:"")+(me?(view==="room"?room():view==="chat"?chat():cab()):home())+(loginFor?`<div class="modal" id="md"><div class="mb" style="--tn:${tn(loginFor)}">${avc(loginFor)}<b>${esc(info(loginFor)[1])}</b><input id="pin" type="password" inputmode="numeric" placeholder="PIN kod" autofocus><div class="err" id="err"></div><button class="btn" id="go">Daxil ol</button> <button class="btn g" id="cl">Bağla</button></div></div>`:"")+(dlg?`<div class="modal"><div class="mb"><p>${esc(dlg.msg)}</p>${dlg.input?(dlg.input==="text"?`<input id="dv" type="text" placeholder="Brendin adı" value="${esc(dlg.val||"")}" style="letter-spacing:normal">`:`<input id="dv" type="password" inputmode="numeric" placeholder="Yeni PIN">`):""}<div style="margin-top:14px"><button class="btn" id="yes">${dlg.input?"Yadda saxla":"Bəli"}</button> <button class="btn g" id="no">${dlg.input?"Ləğv et":"Xeyr"}</button></div></div></div>`:"");
+  $.innerHTML=(dbs==="off"?`<div class="warn">Ortaq bazaya qoşulmaq mümkün olmadı. Mesajlar, təlim qeydləri və status yalnız bu cihazda qalır, başqalar görmür.</div>`:"")+(me?(role==="student"?studentView():view==="users"&&admin?usersView():view==="room"?room():view==="chat"?chat():cab()):home())+(loginFor?`<div class="modal" id="md"><div class="mb" style="--tn:${tn(loginFor)}">${avc(loginFor)}<b>${esc(info(loginFor)[1])}</b><input id="pin" type="password" inputmode="numeric" placeholder="PIN kod" autofocus><div class="err" id="err"></div><button class="btn" id="go">Daxil ol</button> <button class="btn g" id="cl">Bağla</button></div></div>`:"")+(dlg?`<div class="modal"><div class="mb"><p>${esc(dlg.msg)}</p>${dlg.input?(dlg.input==="text"?`<input id="dv" type="text" placeholder="Brendin adı" value="${esc(dlg.val||"")}" style="letter-spacing:normal">`:`<input id="dv" type="password" inputmode="numeric" placeholder="Yeni PIN">`):""}<div style="margin-top:14px"><button class="btn" id="yes">${dlg.input?"Yadda saxla":"Bəli"}</button> <button class="btn g" id="no">${dlg.input?"Ləğv et":"Xeyr"}</button></div></div></div>`:"")+(typeof extraModals==="function"?extraModals():"");
   if(loginFor){const p=document.getElementById("pin");p&&p.focus();}
   const th=document.getElementById("thread");if(th)th.scrollTop=th.scrollHeight;
   if(fa){const el=document.querySelector('[data-r="'+fa[0]+'"][data-c="'+fa[1]+'"]');fa=null;if(el){el.focus();if(el.tagName==="INPUT")el.select();}}
@@ -427,12 +427,7 @@ $.addEventListener("click",async e=>{
   else if(el=g("data-login")){loginFor=el.dataset.login;render();}
   else if(e.target.id==="cl"||e.target.id==="md"){loginFor=null;render();}
   else if(e.target.id==="go"){const v=document.getElementById("pin").value;
-    const goBtn=e.target,errEl=document.getElementById("err");
-    if(!fbAuth){errEl.textContent="Verilənlər bazasına qoşulmaq mümkün olmadı";return;}
-    goBtn.disabled=true;errEl.textContent="";
-    fbAuth.signInWithEmailAndPassword(fbEmail(loginFor),fbPass(v)).then(()=>{
-      me=loginFor;who=me;peer="all";ed=null;pv=null;pe=null;dr=null;dirty=false;vs=null;ve=null;bk=null;loadRd();startDb();setPres(Date.now());admin=me==="t1";sec="offline";panel=false;view="cab";loginFor=null;render();
-    }).catch(err=>{goBtn.disabled=false;const el=document.getElementById("err");if(el)el.textContent=(err&&(err.code==="auth/invalid-credential"||err.code==="auth/wrong-password"||err.code==="auth/user-not-found"||err.code==="auth/invalid-login-credentials"))?"PIN yanlışdır":"Giriş alınmadı: "+((err&&err.code)||err);});}
+    loginWith(loginFor,v,e.target,"err");}
   else if(e.target.id==="out"){endSession();}
   else if(e.target.id==="pnl"){panel=!panel;if(!panel)me=who;ed=null;pv=null;dr=null;dirty=false;render();}
   else if(el=g("data-open")){me=el.dataset.open;panel=false;ed=null;pv=null;pe=null;dr=null;dirty=false;sel=[];vs=null;ve=null;bk=null;dvView="home";dvForm=null;dvFile=null;if(dvPrev)dvclose();render();}
@@ -526,26 +521,95 @@ render();
 /* ===== Firebase data layer ===== */
 let unsubs=[];
 dbs=fbDb?"ok":"off";
+const ROLE_LABEL={superadmin:"Super Admin",admin:"Admin",instructor:"Təlimçi",student:"Tələbə"};
+const isStaffRole=r=>r==="superadmin"||r==="admin"||r==="instructor";
+
 function startDb(){
   if(!fbDb||db)return;
   db=fbDb;dbs="ok";
   const on=(col,fn)=>unsubs.push(db.collection(col).onSnapshot(fn,err=>console.warn("Firestore "+col+":",err&&err.code)));
-  on("bookings",s=>{BK=s.docs.map(d=>({id:d.id,...d.data()}));onBks();if(me)upd();});
-  on("messages",s=>{MS=s.docs.map(d=>({id:d.id,...d.data()}));onMsgs();if(me)upd();});
-  on("presence",s=>{s.docs.forEach(d=>{if(d.id!==who||!P[who])P[d.id]=(d.data()||{}).ts||0;});pres();});
-  on("meetings",s=>{meets=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="room"&&!["INPUT","TEXTAREA","SELECT"].includes((document.activeElement||{}).tagName))render();});
-  on("vesdocs",s=>{DVS=s.docs.map(d=>({id:d.id,...d.data()}));if(me&&view==="cab"&&sec==="ves"&&!dvBusy)upd();});
-  on("katfiles",s=>{KF=s.docs.map(d=>({id:d.id,...d.data()}));if(me&&view==="cab"&&sec==="kat")upd();});
-  on("trainers",s=>{
-    s.docs.forEach(d=>{docs[d.id]=d.data()||{data:{}};});
-    if(!document.activeElement||!["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) render();
-  });
+  if(isStaffRole(role)){
+    on("bookings",s=>{BK=s.docs.map(d=>({id:d.id,...d.data()}));onBks();if(me)upd();});
+    on("messages",s=>{MS=s.docs.map(d=>({id:d.id,...d.data()}));onMsgs();if(me)upd();});
+    on("presence",s=>{s.docs.forEach(d=>{if(d.id!==who||!P[who])P[d.id]=(d.data()||{}).ts||0;});pres();});
+    on("meetings",s=>{meets=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="room"&&!["INPUT","TEXTAREA","SELECT"].includes((document.activeElement||{}).tagName))render();});
+    on("katfiles",s=>{KF=s.docs.map(d=>({id:d.id,...d.data()}));if(me&&view==="cab"&&sec==="kat")upd();});
+    on("trainers",s=>{
+      s.docs.forEach(d=>{docs[d.id]=d.data()||{data:{}};});
+      if(!document.activeElement||!["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) render();
+    });
+  }
+  on("vesdocs",s=>{DVS=s.docs.map(d=>({id:d.id,...d.data()}));if(me&&role==="student")upd();else if(me&&view==="cab"&&sec==="ves"&&!dvBusy)upd();});
 }
 function stopDb(){unsubs.forEach(f=>{try{f()}catch(e){}});unsubs=[];db=null;BK=[];MS=[];meets=[];DVS=[];KF=[];docs={};}
 function endSession(){
-  const done=()=>{stopDb();if(fbAuth)fbAuth.signOut().catch(()=>{});who=null;me=null;admin=false;view="cab";panel=false;render();};
-  if(who&&db){db.doc("presence/"+who).set({ts:0}).catch(()=>{}).then(done);}else done();
+  const done=()=>{stopDb();if(fbAuth)fbAuth.signOut().catch(()=>{});who=null;me=null;admin=false;role="";view="cab";panel=false;render();};
+  if(who&&db&&role!=="student"){db.doc("presence/"+who).set({ts:0}).catch(()=>{}).then(done);}else done();
 }
 setInterval(()=>{if(who)setPres(Date.now());pres();},30000);
 document.addEventListener("visibilitychange",()=>{if(who&&!document.hidden)setPres(Date.now());});
 addEventListener("beforeunload",()=>{if(who)setPres(0);});
+
+/* ===== Roles / profiles ===== */
+function initAV(id){
+  const p=PROFILES[id]||{},n=(p.name||id||"?").trim(),ch=esc(n.charAt(0).toUpperCase()||"?");
+  const cols=[["#bfdbfe","#2563eb"],["#fbcfe8","#db2777"],["#bbf7d0","#16a34a"],["#fde68a","#f59e0b"],["#ddd6fe","#7c3aed"],["#fed7aa","#ea580c"]];
+  let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;const k=cols[h%cols.length];
+  return `<svg viewBox="0 0 64 64"><defs><linearGradient id="gi${esc(id)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${k[0]}"/><stop offset="1" stop-color="${k[1]}"/></linearGradient></defs><circle cx="32" cy="32" r="32" fill="url(#gi${esc(id)})"/><text x="32" y="43" text-anchor="middle" font-size="30" font-weight="700" fill="#fff" font-family="sans-serif">${ch}</text></svg>`;
+}
+let profResolve;const profPromise=new Promise(r=>{profResolve=r;});
+function applyRole(){
+  const p=me&&PROFILES[me];
+  if(p){role=p.role;admin=role==="superadmin"||role==="admin";}
+}
+function applyProfiles(){
+  const all=Object.values(PROFILES);
+  if(!all.length)return;                       // not seeded yet: keep the built-in roster
+  const staff=all.filter(p=>isStaffRole(p.role)&&p.active!==false)
+    .sort((a,b)=>((a.ord??1e9)-(b.ord??1e9))||((a.createdAt||0)-(b.createdAt||0)));
+  T.length=0;staff.forEach(p=>T.push([p.id,p.name,p.title||ROLE_LABEL[p.role]||""]));
+  STU=all.filter(p=>p.role==="student");
+  if(me&&PROFILES[me]){
+    if(PROFILES[me].active===false){toast("Hesabınız deaktiv edilib.");endSession();return;}
+    applyRole();
+  }
+  if(!document.activeElement||!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName))render();
+}
+function startProfiles(){
+  if(!fbDb){profResolve();return;}
+  setTimeout(profResolve,5000);
+  fbDb.collection("profiles").onSnapshot(s=>{
+    PROFILES={};s.docs.forEach(d=>{PROFILES[d.id]={id:d.id,...d.data()};});
+    profResolve();applyProfiles();
+  },err=>{console.warn("profiles:",err&&err.code);profResolve();});
+}
+async function bootstrapProfiles(){
+  const b=fbDb.batch();
+  T.forEach((t,i)=>{b.set(fbDb.doc("profiles/"+t[0]),{name:t[1],title:t[0]==="t1"?"Super Admin":t[2],role:t[0]==="t1"?"superadmin":"instructor",active:true,ord:i,createdAt:Date.now()});});
+  await b.commit();
+}
+function enterApp(id){
+  const p=PROFILES[id]||{role:id==="t1"?"superadmin":"instructor"};
+  role=p.role;admin=role==="superadmin"||role==="admin";
+  me=id;who=id;peer="all";ed=null;pv=null;pe=null;dr=null;dirty=false;vs=null;ve=null;bk=null;
+  loadRd();startDb();setPres(Date.now());
+  sec=role==="student"?"ves":"offline";panel=false;view="cab";loginFor=null;
+  if(id==="t1"&&!PROFILES.t1)bootstrapProfiles().then(()=>toast("Rollar bazası yaradıldı.")).catch(e=>toast("Rollar yaradılmadı: "+((e&&e.code)||e)));
+  render();
+}
+function loginWith(id,pin,btn,errId){
+  const say=m=>{const el=document.getElementById(errId);if(el)el.textContent=m;};
+  if(!fbAuth){say("Verilənlər bazasına qoşulmaq mümkün olmadı");return;}
+  if(!id){say("İstifadəçi adını daxil edin");return;}
+  btn.disabled=true;say("");
+  profPromise.then(()=>{
+    const p=PROFILES[id];
+    if(Object.keys(PROFILES).length&&!p){btn.disabled=false;say("İstifadəçi tapılmadı");return;}
+    if(p&&p.active===false){btn.disabled=false;say("Hesab deaktiv edilib");return;}
+    return fbAuth.signInWithEmailAndPassword(fbEmail(id,p&&p.ver),fbPass(pin)).then(()=>enterApp(id));
+  }).catch(err=>{
+    btn.disabled=false;const c=err&&err.code;
+    say(["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-login-credentials"].includes(c)?"PIN yanlışdır":"Giriş alınmadı: "+(c||err));
+  });
+}
+startProfiles();

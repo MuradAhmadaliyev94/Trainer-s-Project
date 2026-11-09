@@ -9,6 +9,14 @@
 </head>
 <body>
 <div id="app"></div>
+<script>
+/* Shows script errors on screen (handy where the browser console is blocked). */
+window.addEventListener("error",function(e){
+  var b=document.getElementById("errbar");
+  if(!b){b=document.createElement("div");b.id="errbar";b.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#b91c1c;color:#fff;font:12px/1.4 monospace;padding:6px 10px;max-height:30vh;overflow:auto";document.body.appendChild(b);}
+  b.textContent+=(e.message||"error")+" ("+String(e.filename||"").split("/").pop()+":"+e.lineno+")  ";
+});
+</script>
 <script src="js/config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -17,5 +25,6 @@
 <script src="js/data/trainers.js"></script>
 <script src="js/data/sections.js"></script>
 <script src="js/app.js"></script>
+<script src="js/users.js"></script>
 </body>
 </html>
