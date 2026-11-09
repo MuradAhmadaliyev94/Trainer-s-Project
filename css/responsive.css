@@ -137,3 +137,75 @@ img,svg,video{max-width:100%}
   .thread{height:50vh}
   .modal{align-items:center}
 }
+
+/* ==========================================================
+   MOBILE APP MODE (cabinet) — v2, overrides the rules above
+   ========================================================== */
+@media (max-width:800px){
+  body{font-size:15px}
+  .wrap{padding:12px 12px calc(40px + env(safe-area-inset-bottom,0px))}
+
+  /* --- header: compact title row + swipeable action bar --- */
+  .top{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:12px}
+  .top h2.ph{font-size:18px;gap:10px!important;padding:8px 14px 8px 8px;border-radius:20px;flex-wrap:wrap;line-height:1.25}
+  .top h2.ph .av{width:44px!important;height:44px!important}
+  .top h2.ph small{display:none}
+  .top h2.ph .bgs{margin:0}
+  .top>div:last-child{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:2px 2px 6px;margin:0 -12px;padding-left:12px;padding-right:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .top>div:last-child::-webkit-scrollbar{display:none}
+  .top>div:last-child .btn{flex:none;width:auto;white-space:nowrap;scroll-snap-align:start;min-height:42px;padding:9px 16px}
+  .top>.btn{width:auto}
+
+  /* --- section tabs: edge-to-edge swipe strip with fade hint --- */
+  .side{margin:0 -12px;border-radius:0;padding:8px 12px;box-shadow:0 6px 18px rgba(0,0,0,.08);top:env(safe-area-inset-top,0px);
+    scroll-snap-type:x proximity}
+  .side .tab{scroll-snap-align:start;min-height:44px;border-radius:99px;padding:8px 14px;gap:8px;font-size:14px}
+  .side .tab.sp{border-radius:99px;padding:8px 16px;font-size:14px;box-shadow:none}
+  .side .tab i{font-size:11px;padding:0 7px}
+  .side .tab .ic{margin-right:6px}
+
+  /* --- panels & forms --- */
+  .panel,.panel.rm{padding:16px;border-radius:22px}
+  .panel h3{font-size:18px}
+  .form{grid-template-columns:1fr}
+  .row{padding:12px 0;gap:10px}
+  .row .btn{padding:8px 14px}
+
+  /* --- participant grid becomes a list of cards --- */
+  .gt,.gt tbody{display:block;width:100%}
+  .gt tr:first-child{display:none}
+  .gt tr{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;margin:0 0 12px;border-radius:18px;
+    background:color-mix(in srgb,var(--tx) 4%,var(--card));position:relative}
+  .gt td,.gt td:first-child{display:block;position:static;padding:0!important;border:0;min-width:0;text-align:left;background:transparent!important;box-shadow:none!important;width:auto}
+  .gt td::before{display:block;font-size:11px;font-weight:600;color:var(--mu);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+  .gt td:nth-child(1){display:none}
+  .gt td:nth-child(2){grid-column:1/-1}.gt td:nth-child(2)::before{content:"Ad Soyad"}
+  .gt td:nth-child(3)::before{content:"Mağaza"}
+  .gt td:nth-child(4)::before{content:"Bakı filialı / Rayon"}
+  .gt td:nth-child(5)::before{content:"Filial / Rayon adı"}
+  .gt td:nth-child(6)::before{content:"İmtahan (1–5)"}
+  .gt td:nth-child(7){grid-column:1/-1;text-align:right}
+  .gt input,.gt select,.gt td:nth-child(2) input{min-width:0;width:100%;height:46px}
+  .gt tr:has(td.nok){box-shadow:inset 4px 0 0 #16a34a}
+  .gt tr:has(td.nbad){box-shadow:inset 4px 0 0 #ff3b30}
+  .sv{border-radius:18px;margin-top:10px}
+
+  /* --- summary tables stay scrollable but with momentum + shadow hint --- */
+  .scroll{border-radius:14px}
+  table{font-size:13px}
+  th,td{padding:8px}
+
+  /* --- rooms / booking / chat --- */
+  .rgrid{grid-template-columns:1fr 1fr}
+  .bt{padding:16px 8px 12px}
+  .chat{border-radius:20px}
+  .cin{padding:10px;position:sticky;bottom:0;background:var(--card)}
+  .cin input{height:46px}
+}
+
+@media (max-width:420px){
+  .rgrid{grid-template-columns:1fr}
+  .gt tr{grid-template-columns:1fr}
+  .gt td:nth-child(n){grid-column:1/-1}
+  .lg-card{padding:24px 18px}
+}

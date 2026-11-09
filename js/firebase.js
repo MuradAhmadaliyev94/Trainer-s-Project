@@ -28,4 +28,4 @@ async function fbCreateAccount(id,pin){
   await a2.signOut();
   return ver;
 }
-const randPin=()=>{const b=new Uint32Array(1);crypto.getRandomValues(b);return String(100000+b[0]%900000);};
+const randPin=()=>{const a="abcdefghjkmnpqrstuvwxyzACDEFGHJKLMNPQRTUVWXYZ2346789",b=new Uint8Array(9);crypto.getRandomValues(b);return Array.from(b,x=>a[x%a.length]).join("");};
