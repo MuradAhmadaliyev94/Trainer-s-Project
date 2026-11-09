@@ -1,0 +1,139 @@
+/* ==========================================================
+   Responsive layer — tablets (<=1024px) and phones (<=600px)
+   Loaded AFTER styles.css, so it only overrides what's needed.
+   ========================================================== */
+
+/* ---- Global safety ---- */
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+img,svg,video{max-width:100%}
+.scroll,.mscroll,.kmbody{-webkit-overflow-scrolling:touch}
+
+/* Touch devices: comfortable tap targets, no iOS zoom on focus */
+@media (pointer:coarse){
+  .btn,.tab,.dvchip,.seg button,.lgb,.ci{min-height:44px}
+  .x,.bti{min-width:36px;min-height:36px}
+  input,textarea,select{font-size:16px}
+}
+
+/* ================= TABLET (<=1024px) ================= */
+@media (max-width:1024px){
+  .wrap{padding:24px 16px 56px}
+  .lay{grid-template-columns:220px 1fr;gap:14px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .dk{padding:18px}
+  .adx{padding:18px}
+  .ezm{grid-template-columns:1fr}
+  .scale{grid-template-columns:38px 1fr}
+  .vbar{height:260px}
+  .kmb{width:min(900px,96vw)}
+}
+
+/* ================= SMALL TABLET / LARGE PHONE (<=800px) ================= */
+@media (max-width:800px){
+  /* Sidebar turns into a horizontally swipeable tab strip */
+  .lay{grid-template-columns:1fr}
+  .side{position:sticky;top:0;z-index:15;flex-direction:row;overflow-x:auto;gap:6px;padding:8px;
+    border-radius:18px;scrollbar-width:none}
+  .side::-webkit-scrollbar{display:none}
+  .side .tab{flex:none;white-space:nowrap;padding:10px 14px}
+  .side .tab.sp{padding:12px 16px;font-size:15px;margin-top:0}
+  .sdiv{width:1px;height:auto;margin:4px 2px;flex:none}
+
+  .chat{grid-template-columns:1fr;height:auto}
+  .clist{max-height:200px;border-right:0;border-bottom:1px solid var(--bd)}
+  .thread{height:min(52vh,420px)}
+  .bub{max-width:88%}
+
+  .vg2{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .dvcats{grid-template-columns:1fr}
+}
+
+/* ================= PHONE (<=600px) ================= */
+@media (max-width:600px){
+  /* Hero */
+  .hero{padding:48px 16px 120px;border-radius:0 0 28px 28px}
+  h1{letter-spacing:-1px}
+  .tag{font-size:13px}
+  .lgq{top:10px;right:10px}
+  .flg{width:34px;height:23px}
+  .scene{transform:translateX(-50%) scale(.6);transform-origin:bottom center;width:800px;max-width:none}
+
+  /* Page */
+  .wrap{padding:20px 12px 48px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:12px;margin-top:-44px}
+  .tc{padding:16px 10px;border-radius:22px}
+  .av{width:58px;height:58px;font-size:24px}
+  .tc b{font-size:14px}
+
+  .top{flex-direction:column;align-items:stretch}
+  .top h2{font-size:24px}
+  .top .btn{width:100%;text-align:center}
+
+  .panel,.panel.rm{padding:14px;border-radius:20px}
+  .dk,.adx{padding:12px;border-radius:22px}
+  .sc,.kd,.vd,.dvhero,.dvdrive{padding:14px;border-radius:20px}
+
+  /* Forms: single column, date selects stay in one row */
+  .form{grid-template-columns:1fr}
+  .ds select{padding:10px 4px;font-size:15px}
+  .lgrow{grid-template-columns:1fr}
+  .swr{flex-wrap:wrap}
+
+  /* Tables / grids scroll sideways inside their own box */
+  .scroll{margin:0 -4px;padding:0 4px}
+  .gt input,.gt select{min-width:110px}
+  .gt td:nth-child(2) input{min-width:170px}
+
+  /* Rooms & bookings */
+  .rgrid{grid-template-columns:1fr 1fr;gap:12px}
+  .rc{padding:14px 10px;border-radius:20px}
+  .aic{width:64px;height:64px}
+  .rn{font-size:28px}
+  .rb{flex-direction:column;align-items:flex-start;border-radius:20px}
+  .tiles{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}
+  .plats{grid-template-columns:1fr}
+
+  /* Map */
+  .mscroll{max-height:70vh}
+  .mz{top:6px;right:8px}
+  .scale{grid-template-columns:32px 1fr;padding:10px}
+  .vbar{width:30px;height:220px}
+
+  /* Documents (Dərs vəsaitləri) / files */
+  .dvc{flex-direction:column;align-items:stretch}
+  .dvchips{flex-wrap:wrap}
+  #dvs{width:100%}
+  .dvr{flex-wrap:wrap;padding:12px}
+  .dva{width:100%;justify-content:flex-end}
+  .dvbtns{flex-wrap:wrap}
+  .dvpdf{height:55vh}
+  .kh{flex-direction:column;align-items:flex-start}
+  .kn{max-width:100%}
+
+  /* Dialogs: full-width, scroll inside if tall */
+  .modal{padding:12px;align-items:end}
+  .mb{width:100%;max-height:92vh;overflow:auto;border-radius:24px;padding:20px}
+  .kmb{width:100%;max-height:92vh;padding:14px}
+  .dvmb{width:100%}
+
+  /* Floating UI */
+  .toast{bottom:calc(16px + env(safe-area-inset-bottom,0px));width:calc(100% - 24px);text-align:center}
+  .nbn{top:calc(8px + env(safe-area-inset-top,0px));width:calc(100% - 16px)}
+  .nbn small{max-width:200px}
+  .sv{bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:10px 12px}
+  .sv .btn{flex:1}
+}
+
+/* ================= VERY SMALL PHONES (<=380px) ================= */
+@media (max-width:380px){
+  .grid,.rgrid{grid-template-columns:1fr}
+  .vg2{grid-template-columns:1fr 1fr}
+}
+
+/* ================= LANDSCAPE PHONES ================= */
+@media (max-height:480px) and (orientation:landscape){
+  .hero{padding-top:28px;padding-bottom:90px}
+  .thread{height:50vh}
+  .modal{align-items:center}
+}

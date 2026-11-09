@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Firebase check</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;background:#f5f5f7;color:#1d1d1f}
+h1{font-size:22px}
+.s{padding:10px 14px;margin:8px 0;border-radius:10px;background:#fff;border-left:6px solid #aaa}
+.ok{border-color:#16a34a}.bad{border-color:#dc2626;background:#fff1f0}.wait{border-color:#f59e0b}
+small{display:block;color:#555;word-break:break-word}
+button{padding:10px 18px;border:0;border-radius:99px;background:#0071e3;color:#fff;font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+<h1>Firebase connection check</h1>
+<p>Page address: <b id="loc"></b></p>
+<button id="run">Run check again</button>
+<div id="out"></div>
+
+<script src="js/config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+document.getElementById("loc").textContent=location.href;
+const out=document.getElementById("out");
+function step(title){const d=document.createElement("div");d.className="s wait";d.innerHTML="<b></b><small>running...</small>";d.firstChild.textContent=title;out.appendChild(d);
+  return {ok:m=>{d.className="s ok";d.lastChild.textContent=m||"OK"},bad:m=>{d.className="s bad";d.lastChild.textContent=m}}}
+async function run(){
+  out.innerHTML="";
+  let s=step("1. Firebase library loaded (internet access to gstatic.com)");
+  if(typeof firebase==="undefined"){s.bad("Library did not load. Internet blocked or ad-blocker/proxy is blocking www.gstatic.com.");return;} s.ok("v"+firebase.SDK_VERSION);
+
+  s=step("2. Config loaded (js/config.js)");
+  if(!window.APP_CONFIG||!APP_CONFIG.FIREBASE||!APP_CONFIG.FIREBASE.apiKey){s.bad("js/config.js missing or empty. Run scripts\\build-config.ps1");return;}
+  s.ok("project: "+APP_CONFIG.FIREBASE.projectId);
+
+  let auth,db;
+  s=step("3. Firebase initialised");
+  try{ if(!firebase.apps.length)firebase.initializeApp(APP_CONFIG.FIREBASE); auth=firebase.auth(); db=firebase.firestore(); s.ok(); }
+  catch(e){s.bad((e.code||"")+" "+e.message);return;}
+
+  s=step("4. Sign in as t1@trainers.app");
+  try{ await auth.signInWithEmailAndPassword("t1@trainers.app","tp-9999"); s.ok("Signed in as "+auth.currentUser.email); }
+  catch(e){
+    const hint={"auth/operation-not-supported-in-this-environment":"Opening via file:// is not supported. Use scripts\\serve.ps1 (http://localhost:5500).",
+      "auth/configuration-not-found":"Authentication is not enabled in the Firebase console.",
+      "auth/invalid-credential":"Wrong email/password or account not created. Run scripts\\seed-firebase.ps1.",
+      "auth/network-request-failed":"Network blocked (firewall/proxy)."}[e.code]||"";
+    s.bad(e.code+" - "+e.message+(hint?"\nHINT: "+hint:"")); return; }
+
+  s=step("5. Write to Firestore (presence/_check)");
+  try{
+    const tm=new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout",message:"Server did not confirm the write within 15 s."}),15000));
+    await Promise.race([db.doc("presence/_check").set({ts:Date.now()}),tm]); s.ok("Server confirmed the write"); }
+  catch(e){s.bad(e.code+" - "+e.message+(e.code==="permission-denied"?"\nHINT: publish firestore.rules in the console.":"")+(e.code==="timeout"||e.code==="unavailable"?"\nHINT: the Firestore database may not be created yet (Firebase console > Firestore Database > Create database), or the network blocks firestore.googleapis.com.":""));return;}
+
+  s=step("6. Read it back from the SERVER (not local cache)");
+  try{ const d=await db.doc("presence/_check").get({source:"server"}); d.exists?s.ok("Server value: "+JSON.stringify(d.data())):s.bad("Document not found"); await db.doc("presence/_check").delete(); }
+  catch(e){s.bad(e.code+" - "+e.message);return;}
+
+  step("RESULT").ok("All good - the app is wired to Firebase.");
+  auth.signOut();
+}
+document.getElementById("run").onclick=run; run();
+</script>
+</body>
+</html>

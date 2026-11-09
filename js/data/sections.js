@@ -1,0 +1,2 @@
+// Cabinet sections: [key, title, emoji, name-field label]
+const S=[["offline","Offline təlimlər","🏫","Təlimin adı"],["online","Online təlimlər","💻","Təlimin adı"],["vendor","Vendor təlimləri","🤝","Vendor / təlim"],["kat","Kateqoriya imtahanları","🏅","Kateqoriya"],["ves","Dərs vəsaitləri","📚","Vəsaitin adı"],["ezam","Ezamiyyətlər","✈️","Məkan / məqsəd"],["mez","Məzuniyyətlər","🌴","Məzuniyyət növü"],["promo","Promouter təlimləri","📣","Təlimin adı"]];
